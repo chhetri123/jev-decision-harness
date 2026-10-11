@@ -15,21 +15,92 @@ retrieval, thresholds and every side effect, and **Jev never grants a permission
 It does nothing in projects that have not run `/jev-init`. Any error, timeout or missing API key leaves
 Claude Code's behaviour unchanged.
 
-## Install
+## Setup
+
+### 1. Prerequisites
+
+- **Claude Code**, installed and logged in (`claude --version`).
+- **Node.js 20 or newer** on your `PATH` (`node -v`). The hooks run with `node`.
+- **A TypeSafe API key for Jev**, exported in the shell you start Claude Code from:
+
+  ```bash
+  export TYPESAFE_API_KEY=your-key-here     # JEV_API_KEY also works
+  ```
+
+  Add it to `~/.zshrc` or `~/.bashrc` to keep it. Never commit it to a project.
+
+### 2. Install the plugin
 
 ```bash
 claude plugin marketplace add chhetri123/jev-decision-harness
 claude plugin install jev-decision-harness@jev-decision-harness
-export TYPESAFE_API_KEY=...     # or JEV_API_KEY: environment only, never committed
 ```
 
-In a project:
+Restart Claude Code afterwards. To run from a local clone instead:
+
+```bash
+git clone https://github.com/chhetri123/jev-decision-harness
+claude --plugin-dir ./jev-decision-harness/plugins/jev-decision-harness
+```
+
+### 3. Enable it in a project
+
+The plugin does nothing until a project opts in. Open Claude Code in the project and run:
 
 ```
-/jev-init                       # writes .agent/config.yaml, policies.yaml, skills.yaml (shadow mode)
-/jev-report                     # Jev's would-be decisions vs what Claude actually did
+/jev-init
+```
+
+This writes `.agent/config.yaml`, `.agent/policies.yaml` and `.agent/skills.yaml` in **shadow mode**,
+and adds `.agent/receipts/` and `.agent/state/` to `.gitignore`. In shadow mode Jev's decisions are
+only logged; Claude's behaviour does not change. Try it in a throwaway repository first.
+
+### 4. Check that it works
+
+```
+/jev-check intake "Add Redis caching to the document retrieval service"
 /jev-check check-command "git push origin +main"
 ```
+
+Then ask Claude for an ordinary change. Afterwards:
+
+```bash
+cat .agent/receipts/*.jsonl     # expect intake, context_ranking, command_risk, patch_verification lines
+```
+
+`/jev-report` compares Jev's decisions with what Claude actually did, with latency and fallback rate.
+
+### 5. Turn on command-risk gating (the one active feature the benchmark supports)
+
+Edit `.agent/config.yaml`:
+
+```yaml
+jev:
+  mode: active
+thresholds:
+  command_risk_ask: 1.2   # leave the other thresholds null: null means log only
+```
+
+A shell command that no policy rule recognises and that Jev scores at 1.2/3 or higher now needs your
+confirmation before it runs. Test it with `/jev-check check-command "…"` rather than by running
+dangerous commands. To switch off: set `mode: shadow`, or start Claude with `JEV_MODE=off claude`.
+
+Command rules (deny / ask / allow regexes), sensitive paths and project conventions live in
+`.agent/policies.yaml`. Skills in `.claude/skills/*/SKILL.md` are picked up automatically; add others
+in `.agent/skills.yaml`.
+
+### Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| No `.agent/receipts/` after using Claude | Run `/jev-init` in that project, then restart Claude Code. |
+| Receipts show `"source":"fallback"`, "no api key" | The key isn't set in the shell that launched `claude`. Export it and restart. |
+| Fallbacks with timeouts | Raise `jev.timeout_ms` in `.agent/config.yaml` (e.g. `8000`). |
+| `/jev-init` not found | Check `claude plugin list`; or use the full name `/jev-decision-harness:jev-init`. |
+| Hook errors mentioning `node` | Install Node.js 20+ and make sure `node` is on your `PATH`. |
+| Behind a corporate proxy | Start Claude with `NODE_USE_ENV_PROXY=1` (Node ≥ 22.21) so the hooks use `HTTPS_PROXY`. |
+
+To remove it: `claude plugin uninstall jev-decision-harness`, then delete `.agent/` from projects.
 
 ## What the benchmark says to turn on
 
