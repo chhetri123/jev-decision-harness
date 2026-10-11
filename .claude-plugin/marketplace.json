@@ -1,0 +1,12 @@
+{
+  "name": "jev-decision-harness",
+  "owner": { "name": "chhetri123" },
+  "metadata": { "description": "Typed Jev (TypeSafe System One) decisions around Claude Code" },
+  "plugins": [
+    {
+      "name": "jev-decision-harness",
+      "source": "./plugins/jev-decision-harness",
+      "description": "Typed Jev (TypeSafe System One) decisions around Claude Code, shadow mode first."
+    }
+  ]
+}

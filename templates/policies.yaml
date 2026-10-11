@@ -1,0 +1,18 @@
+# Deterministic policy (.agent/policies.yaml). Enforced by code, never by Jev.
+# Keys given here replace the built-in lists (see src/config.ts DEFAULT_POLICIES); omit a key to keep the default.
+
+# commands:
+#   deny:  [regex, ...]   # any simple command or the whole line matches → blocked
+#   ask:   [regex, ...]   # → human confirmation
+#   allow: [regex, ...]   # every simple command matches (no file redirection) → left to Claude Code's normal permissions
+#   Anything else is "unknown": the only case where Jev's risk score is consulted, and it can only escalate to ask.
+
+# sensitive_paths: [regex, ...]   # a diff touching these → human review
+
+# Project rules the patch verifier checks semantically (Jev noul "violates state.conventions?").
+conventions: []
+#  - Controllers contain no business logic; they call an application service.
+#  - Errors are thrown as DomainError with a code from libs/shared/errors.
+
+max_diff_lines_without_review: 400
+max_files_without_review: 12

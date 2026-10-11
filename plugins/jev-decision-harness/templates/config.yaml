@@ -1,0 +1,49 @@
+# jev-agent-harness — project configuration (.agent/config.yaml)
+#
+# Jev answers small, typed questions; it never generates code, never runs commands and never
+# grants permissions. Deterministic code (policies.yaml) enforces everything.
+#
+# Rollout: off → shadow (log Jev's decisions next to what Claude actually did; `jev-agent report`)
+#          → active, one feature at a time, only for features the benchmark supports.
+
+jev:
+  mode: shadow            # off | shadow | active   (env JEV_MODE overrides)
+  model: jev-latest       # pin a version (e.g. jev-1.13.0) once thresholds are fit to it
+  timeout_ms: 3000        # per attempt; every failure falls back to the normal Claude path
+  max_retries: 1
+
+features:
+  intake: true              # UserPromptSubmit: task kind + skills + risk flags + complexity (one request)
+  context_ranking: true     # UserPromptSubmit: re-rank deterministic file search results
+  command_risk: true        # PreToolUse(Bash): Jev only for commands no policy rule decides; may only escalate to "ask"
+  patch_verification: true  # Stop: semantic diff checks on top of deterministic ones
+  test_triage: true         # PostToolUse(Bash): classify failing test/build output
+  model_routing: false      # orchestrator only (`jev-agent run --route-model`); hooks cannot switch models
+
+# A null threshold means "no evidence yet": the decision runs in shadow but can never act.
+# Fill these from your own `npm run benchmark:decisions` run on your own labelled data
+# (the decision benchmark in https://github.com/chhetri123/agent-workflow). Values fit on one project do not transfer automatically.
+thresholds:
+  skill_select: null
+  risk_flag: null
+  context_keep: null
+  task_kind_min_confidence: null
+  command_risk_ask: null       # on the 0–3 risk score
+  patch_suspicious: null
+  patch_incomplete: null
+  patch_unrelated_file: null
+  triage_min_confidence: null
+  complexity_strong: null      # on the 0–3 complexity score
+  complexity_fast: null
+
+models:
+  fast: claude-haiku-4-5-20251001
+  standard: claude-sonnet-5-5
+  strong: claude-opus-5-5
+
+context:
+  max_candidates: 20   # deterministic search results sent to Jev (paths + short summaries only)
+  min_keep: 3
+  max_keep: 8
+
+receipts_dir: .agent/receipts

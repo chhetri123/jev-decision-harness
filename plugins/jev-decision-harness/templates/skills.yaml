@@ -1,0 +1,7 @@
+# Skill catalog for Jev skill selection (.agent/skills.yaml).
+# Skills in .claude/skills/*/SKILL.md are discovered automatically from their frontmatter;
+# entries here add skills that live elsewhere or override a discovered description.
+# Jev sees only name + description, so write descriptions that say when the skill applies.
+skills: []
+#  - name: drizzle-postgres
+#    description: PostgreSQL access through Drizzle ORM — schema, queries, indexes, migrations.

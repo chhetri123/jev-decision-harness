@@ -1,0 +1,6 @@
+node_modules/
+dist/
+!plugins/jev-decision-harness/dist/
+.agent/receipts/
+.agent/state/
+*.log

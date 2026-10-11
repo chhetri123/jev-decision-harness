@@ -1,0 +1,10 @@
+{
+  "name": "jev-decision-harness",
+  "version": "0.1.0",
+  "description": "Typed Jev (TypeSafe System One) decisions around Claude Code: skill selection, context ranking, command-risk gating, test-failure triage and patch verification. Shadow mode by default; deterministic policy enforces permissions; Jev never grants them.",
+  "author": { "name": "chhetri123" },
+  "homepage": "https://github.com/chhetri123/jev-decision-harness",
+  "repository": "https://github.com/chhetri123/jev-decision-harness",
+  "license": "MIT",
+  "keywords": ["jev", "typesafe", "routing", "hooks", "verification", "shadow-mode"]
+}

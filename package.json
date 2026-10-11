@@ -1,0 +1,54 @@
+{
+  "name": "jev-agent-harness",
+  "version": "0.1.0",
+  "description": "Claude Code plugin and CLI: typed Jev (TypeSafe System One) decisions around Claude Code, with deterministic policy and shadow mode",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && esbuild src/cli.ts --bundle --platform=node --format=esm --target=node20 --outfile=dist/jev-agent.mjs --log-level=warning \"--banner:js=import { createRequire as __cr } from 'node:module'; const require = __cr(import.meta.url);\"",
+    "build:plugin": "npm run build && node scripts/build-plugin.mjs",
+    "test": "vitest run",
+    "prepare": "npm run build",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@typesafe-ai/sdk": "^0.6.0",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "esbuild": "^0.25.12",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  },
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "jev-agent": "dist/jev-agent.mjs"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "skill"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chhetri123/jev-decision-harness.git"
+  },
+  "homepage": "https://github.com/chhetri123/jev-decision-harness#readme",
+  "bugs": {
+    "url": "https://github.com/chhetri123/jev-decision-harness/issues"
+  },
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "jev",
+    "typesafe",
+    "hooks",
+    "agent",
+    "shadow-mode"
+  ]
+}

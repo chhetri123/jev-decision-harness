@@ -1,0 +1,9 @@
+{
+  "description": "jev-decision-harness: acts only in projects that ran /jev-init (.agent/config.yaml present). Fail-open: any error or missing API key leaves Claude Code unchanged.",
+  "hooks": {
+    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/dist/jev-agent.mjs\" hook --require-config", "timeout": 15 }] }],
+    "PreToolUse": [{ "matcher": "Bash", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/dist/jev-agent.mjs\" hook --require-config", "timeout": 10 }] }],
+    "PostToolUse": [{ "matcher": "Skill|Read|Edit|Write|MultiEdit|Bash", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/dist/jev-agent.mjs\" hook --require-config", "timeout": 15 }] }],
+    "Stop": [{ "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/dist/jev-agent.mjs\" hook --require-config", "timeout": 30 }] }]
+  }
+}
